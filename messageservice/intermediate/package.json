@@ -1,0 +1,16 @@
+{
+  "name": "messageservice",
+  "version": "1.0.0",
+  "main": "orig.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "package": "^1.0.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}

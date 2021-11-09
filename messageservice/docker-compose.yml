@@ -1,0 +1,73 @@
+version: "3.9"
+networks:
+  message-queue-network:
+    external: true
+services:
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+        - message-queue-network
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+  original:
+    build:
+      context: ./original/
+      dockerfile: Dockerfile
+    volumes:
+      - /node_modules
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+        - message-queue-network
+    depends_on:
+      - rabbit
+  intermediate:
+    build:
+      context: ./intermediate/
+      dockerfile: Dockerfile
+    volumes:
+      - /node_modules
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+        - message-queue-network
+    depends_on:
+      - rabbit
+  observer:
+    build:
+      context: ./observer/
+      dockerfile: Dockerfile
+    volumes:
+      - /node_modules
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+        - message-queue-network
+    depends_on:
+      - rabbit
+    volumes:
+      - "test:/data"
+  httpserver:
+    build:
+      context: ./httpserv/
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.1.1:8080:8080"
+    networks:
+      - message-queue-network
+    depends_on:
+      - rabbit
+    volumes:
+      - "test:/data"
+
+volumes:
+    test: 
